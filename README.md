@@ -23,18 +23,12 @@ This platform simulates a **realistic telecom operational environment** and prov
 
 ## 🧱 Architecture Overview
 Source CSV Files
-↓
-Fabric Pipelines (Copy Activity)
-↓
-LH_Bronze_Telecom (Raw Data)
-↓
-Bronze Validation Notebook
-↓
-LH_Silver_Telecom (Cleansed + SLA Logic)
-↓
-LH_Gold_Telecom (Star Schema)
-↓
-Power BI (Direct Lake)
+→ Fabric Pipelines (Copy Activity)
+→ lh_Bronze_Telecom (Raw, Immutable Data)
+→ Bronze Validation Notebook (Schema & Ingestion Checks)
+→ lh_Silver_Telecom (Cleansed Data + SLA Logic)
+→ lh_Gold_Telecom (Analytics-Ready Star Schema)
+→ Power BI (Direct Lake)
 
 
 ### Key Design Choices
