@@ -155,8 +155,8 @@ Generated **South Africa–themed telecom outage data**, provided as monthly CSV
 |-----|------|
 | Phase 0 – Architecture & Decisions | ✅ Complete |
 | Phase 1 – Environment Setup | ✅ Complete |
-| Phase 2 – Bronze Ingestion | 🔄 In progress  |
-| Phase 3 – Silver Transformations | 🔄 Next |
+| Phase 2 – Bronze Ingestion |  ✅ Complete  |
+| Phase 3 – Silver Transformations | 🔄 In progress |
 | Phase 4 – Gold Modeling | ⏳ Planned |
 | Phase 5 – BI Dashboard | ⏳ Planned |
 | Phase 6 – Enhancements (Optional) | ⏳ Future |
