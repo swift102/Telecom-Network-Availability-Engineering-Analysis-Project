@@ -651,50 +651,6 @@ Columns:
 
 ---
 
-## 📊 Current Metrics & Observability
-
-### Bronze Layer Statistics
-
-**Data Loaded (as of current state):**
-```
-Total months processed: 4 (Jan-Apr 2024)
-Total records ingested: ~XXX,XXX
-Total file size: ~XX MB
-Average load time per month: ~XX seconds
-```
-
-**Partition Distribution:**
-```sql
-SELECT 
-    year, 
-    month, 
-    COUNT(*) as record_count,
-    MIN(event_timestamp) as earliest_event,
-    MAX(event_timestamp) as latest_event
-FROM bronze_network_events
-GROUP BY year, month
-ORDER BY year, month;
-```
-
-**Data Quality Overview (Observational):**
-```sql
--- Vendor distribution
-SELECT vendor, COUNT(*) as count
-FROM bronze_network_events
-GROUP BY vendor;
-
--- Technology distribution
-SELECT technology, COUNT(*) as count
-FROM bronze_network_events
-GROUP BY technology;
-
--- Province coverage
-SELECT province, COUNT(*) as count
-FROM bronze_network_events
-GROUP BY province;
-```
-
----
 
 ## 🛠️ Development Environment & Tools
 
@@ -763,14 +719,7 @@ GROUP BY province;
 
 ---
 
-## 👥 Contributing
 
-This is a portfolio project demonstrating production-grade data engineering practices. Feedback and suggestions welcome via:
-- GitHub Issues (if repo is public)
-- LinkedIn message
-- Email
-
----
 
 ## 📄 License
 
@@ -789,5 +738,4 @@ This implementation is part of a personal portfolio project showcasing data engi
 
 **Last Updated:** January 2026  
 **Phase:** Bronze Complete | Silver Planned  
-**Author:** Data Engineering Portfolio Project  
-**Platform:** Microsoft Fabric | OneLake | Delta Lake
+
