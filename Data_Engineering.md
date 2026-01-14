@@ -5,6 +5,18 @@
 [![Lakehouse](https://img.shields.io/badge/Architecture-Medallion-green?style=flat-square)](https://www.databricks.com/glossary/medallion-architecture)
 [![Status](https://img.shields.io/badge/Phase-Bronze%20Complete-success?style=flat-square)]()
 
+### Table of Contents
+1. [Project Charter & Executive Summary](#1-project-charter--executive-summary)  
+2. [Vision & Business Objectives](#2-vision--business-objectives)  
+3. [Architecture & Data Flow](#3-architecture--data-flow)  
+4. [Technology Stack](#4-technology-stack)  
+5. [Data Governance & Quality Framework](#5-data-governance--quality-framework)  
+6. [Naming Conventions & Standards](#6-naming-conventions--standards)  
+7. [Project Timeline & Milestones (Phased Approach)](#7-project-timeline--milestones-phased-approach)  
+8. [Roles & Responsibilities](#8-roles--responsibilities)  
+9. [Risks & Mitigations](#9-risks--mitigations)  
+10. [Appendices](#10-appendices)  
+
 ---
 
 ## 📌 Purpose of This Document
