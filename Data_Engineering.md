@@ -101,7 +101,7 @@ This document details the **data engineering implementation** of the Telecom Net
 
 **Pipeline Configuration:**
 ```
-Pipeline: PL_Bronze_NetworkEvents_Ingest_GitHub
+Pipeline: pl_Bronze_NetworkEvents_Ingest_GitHub
 Parameters:
   - p_year: String (e.g., "2024")
   - p_month: String (e.g., "01", "02", ...)
@@ -206,11 +206,11 @@ source_file           STRING    # Audit column
 **Planned Components:**
 - Silver Lakehouse: `lh_Silver_Telecom`
 - Notebooks:
-  - `NB_Silver_NetworkEvents` - Core transformation logic
-  - `NB_Silver_DataQualityMetrics` - DQ framework
-  - `NB_Silver_Sites` - Site dimension processing
-  - `NB_Silver_Vendors` - Vendor dimension processing
-  - `NB_Silver_Technologies` - Technology dimension processing
+  - `nb_Silver_NetworkEvents` - Core transformation logic
+  - `nb_Silver_DataQualityMetrics` - DQ framework
+  - `nb_Silver_Sites` - Site dimension processing
+  - `nb_Silver_Vendors` - Vendor dimension processing
+  - `nb_Silver_Technologies` - Technology dimension processing
 
 ---
 
@@ -251,21 +251,21 @@ Examples:
 
 ### Pipeline Naming
 ```
-Pattern: PL_{Layer}_{Entity}_{Action}_{Source}
+Pattern: pl_{Layer}_{Entity}_{Action}_{Source}
 Examples:
-  - PL_Bronze_NetworkEvents_Ingest_GitHub
-  - PL_Telecom_EndToEnd (master orchestration)
-  - PL_Silver_SLA_Calculate (future)
+  - pl_Bronze_NetworkEvents_Ingest_GitHub
+  - pl_Telecom_EndToEnd (master orchestration)
+  - pl_Silver_SLA_Calculate (future)
 ```
 
 ### Notebook Naming
 ```
-Pattern: NB_{Layer}_{Purpose}
+Pattern: nb_{Layer}_{Purpose}
 Examples:
-  - NB_Bronze_Validation
-  - NB_Silver_NetworkEvents
-  - NB_Gold_DimSite_SCD2
-  - NB_Gold_FactNetworkAvailability
+  - nb_Bronze_Validation
+  - nb_Silver_NetworkEvents
+  - nb_Gold_DimSite_SCD2
+  - nb_Gold_FactNetworkAvailability
 ```
 
 ### Table Naming
@@ -417,13 +417,13 @@ With partitioning:
 **Target state:**
 
 ```
-Master Pipeline: PL_Telecom_EndToEnd
+Master Pipeline: pl_Telecom_EndToEnd
 ├─ Step 1: Detect unprocessed months
 │  └─ Query control table: bronze_file_control
 │  └─ Identify gaps: [01, 03] (if 02 and 04 exist)
 │
 ├─ Step 2: ForEach unprocessed month
-│  └─ Execute: PL_Bronze_NetworkEvents_Ingest_GitHub
+│  └─ Execute: pl_Bronze_NetworkEvents_Ingest_GitHub
 │     └─ Parameters: year, month (dynamic)
 │
 └─ Step 3: Update control table
@@ -574,11 +574,11 @@ The following capabilities are **deliberately not implemented** in the current B
    ```
 
 **Deliverables:**
-- [ ] `NB_Silver_NetworkEvents` - Core transformation logic
-- [ ] `NB_Silver_DataQualityMetrics` - DQ checks
-- [ ] `NB_Silver_Sites` - Site dimension
-- [ ] `NB_Silver_Vendors` - Vendor dimension
-- [ ] `NB_Silver_Technologies` - Technology dimension
+- [ ] `nb_Silver_NetworkEvents` - Core transformation logic
+- [ ] `nb_Silver_DataQualityMetrics` - DQ checks
+- [ ] `nb_Silver_Sites` - Site dimension
+- [ ] `nb_Silver_Vendors` - Vendor dimension
+- [ ] `nb_Silver_Technologies` - Technology dimension
 - [ ] Silver Delta tables created
 - [ ] Data quality dashboard (Fabric)
 
@@ -613,7 +613,7 @@ Columns:
 - `dim_province` - Geographic hierarchy (Type 1)
 
 **Deliverables:**
-- [ ] Date dimension generator (`NB_Gold_DimDate`)
+- [ ] Date dimension generator (`nb_Gold_DimDate`)
 - [ ] SCD Type 2 implementation for sites
 - [ ] Fact table aggregation logic
 - [ ] Gold Delta tables created
