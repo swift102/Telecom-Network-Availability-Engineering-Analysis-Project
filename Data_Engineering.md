@@ -1,44 +1,50 @@
-# 📊 Data Engineering Implementation
-## Telecom Network Availability Platform – Microsoft Fabric
+📊 Data Engineering Implementation
+Telecom Network Availability Platform – Microsoft Fabric
+Show Image
+Show Image
+Show Image
 
-[![Fabric](https://img.shields.io/badge/Microsoft%20Fabric-2.0-blue?style=flat-square&logo=microsoft)](https://fabric.microsoft.com)
-[![Lakehouse](https://img.shields.io/badge/Architecture-Medallion-green?style=flat-square)](https://www.databricks.com/glossary/medallion-architecture)
-[![Status](https://img.shields.io/badge/Phase-Bronze%20Complete-success?style=flat-square)]()
+📋 Table of Contents
 
-### Table of Contents
-1. [Project Charter & Executive Summary](#1-project-charter--executive-summary)  
-2. [Vision & Business Objectives](#2-vision--business-objectives)  
-3. [Architecture & Data Flow](#3-architecture--data-flow)  
-4. [Technology Stack](#4-technology-stack)  
-5. [Data Governance & Quality Framework](#5-data-governance--quality-framework)  
-6. [Naming Conventions & Standards](#6-naming-conventions--standards)  
-7. [Project Timeline & Milestones (Phased Approach)](#7-project-timeline--milestones-phased-approach)  
-8. [Roles & Responsibilities](#8-roles--responsibilities)  
-9. [Risks & Mitigations](#9-risks--mitigations)  
-10. [Appendices](#10-appendices)  
+Purpose of This Document
+Architecture Overview
 
----
+High-Level Data Flow
+Core Architectural Principles
 
-## 📌 Purpose of This Document
 
-This document details the **data engineering implementation** of the Telecom Network Availability Analytics Platform. It complements the main project README by focusing on:
+Current Implementation Status
 
-- 🏗️ **Architecture decisions** and design patterns
-- 🔄 **Data ingestion** strategies and orchestration
-- 🗄️ **Lakehouse design** and modeling approach
-- 📏 **Naming conventions** and standards
-- ⚖️ **Engineering trade-offs** and rationale
-- 🚀 **Planned enhancements** and roadmap
+Bronze Layer (Complete)
+Silver Layer (Not Started)
+Gold Layer (Not Started)
 
-**Target Audience:** Data engineers, platform architects, and technical reviewers evaluating implementation quality and production readiness.
 
----
+Naming Conventions & Standards
+Design Decisions & Engineering Rationale
+Incremental Ingestion Strategy
+Intentionally Deferred
+Roadmap & Next Engineering Phase
+Development Environment & Tools
+Testing Strategy
+References & Further Reading
+Related Documentation
 
-## 🏗️ Architecture Overview
 
-### High-Level Data Flow
+📌 Purpose of This Document
+This document details the data engineering implementation of the Telecom Network Availability Analytics Platform. It complements the main project README by focusing on:
 
-```
+🏗️ Architecture decisions and design patterns
+🔄 Data ingestion strategies and orchestration
+🗄️ Lakehouse design and modeling approach
+📏 Naming conventions and standards
+⚖️ Engineering trade-offs and rationale
+🚀 Planned enhancements and roadmap
+
+Target Audience: Data engineers, platform architects, and technical reviewers evaluating implementation quality and production readiness.
+
+🏗️ Architecture Overview
+High-Level Data Flow
 ┌─────────────────┐
 │  GitHub (CSV)   │  Source System
 │  Raw Data Files │  
@@ -83,36 +89,21 @@ This document details the **data engineering implementation** of the Telecom Net
 │  • SLA compliance           │
 │  • Vendor performance       │
 └─────────────────────────────┘
-```
+Core Architectural Principles
+PrincipleImplementationRationaleLakehouse-FirstNo Fabric Warehouse (currently)Spark-native transformations, Direct Lake supportMedallion ArchitectureBronze → Silver → Gold layersClear separation of concerns, incremental valueSchema EvolutionSchema-on-read (Bronze) → Schema-on-write (Gold)Flexibility early, consistency lateSpark-Based ProcessingPySpark notebooks for all transformationsScalability, performance, future-proofingBI IsolationPower BI consumes only Gold layerStable contracts, performance optimizationParameter-DrivenDynamic year/month/file parametersReusability, incremental loading support
 
-### Core Architectural Principles
+✅ Current Implementation Status
+🥉 Bronze Layer (COMPLETE)
+Data Ingestion
+Source Integration:
 
-| Principle | Implementation | Rationale |
-|-----------|---------------|-----------|
-| **Lakehouse-First** | No Fabric Warehouse (currently) | Spark-native transformations, Direct Lake support |
-| **Medallion Architecture** | Bronze → Silver → Gold layers | Clear separation of concerns, incremental value |
-| **Schema Evolution** | Schema-on-read (Bronze) → Schema-on-write (Gold) | Flexibility early, consistency late |
-| **Spark-Based Processing** | PySpark notebooks for all transformations | Scalability, performance, future-proofing |
-| **BI Isolation** | Power BI consumes only Gold layer | Stable contracts, performance optimization |
-| **Parameter-Driven** | Dynamic year/month/file parameters | Reusability, incremental loading support |
+Source System: GitHub repository (public HTTP endpoint)
+Ingestion Tool: Fabric Data Pipeline with Copy Activity
+Connection Type: HTTP (anonymous)
+File Format: CSV with headers
+Ingestion Pattern: Parameter-driven batch loads
 
----
-
-## ✅ Current Implementation Status
-
-### 🥉 Bronze Layer (COMPLETE)
-
-#### Data Ingestion
-
-**Source Integration:**
-- **Source System:** GitHub repository (public HTTP endpoint)
-- **Ingestion Tool:** Fabric Data Pipeline with Copy Activity
-- **Connection Type:** HTTP (anonymous)
-- **File Format:** CSV with headers
-- **Ingestion Pattern:** Parameter-driven batch loads
-
-**Pipeline Configuration:**
-```
+Pipeline Configuration:
 Pipeline: pl_Bronze_NetworkEvents_Ingest_GitHub
 Parameters:
   - p_year: String (e.g., "2024")
@@ -127,10 +118,7 @@ Destination:
   Lakehouse: lh_Bronze_Telecom
   Path: Files/network_events/year={year}/month={month}/
   Format: CSV (preserved as-is)
-```
-
-**Data Partitioning Strategy:**
-```
+Data Partitioning Strategy:
 lh_Bronze_Telecom/
 ├── Files/
 │   └── network_events/
@@ -145,23 +133,18 @@ lh_Bronze_Telecom/
 │               └── network_availability_2024_04.csv
 └── Tables/
     └── bronze_network_events (Delta table)
-```
+Key Features:
 
-**Key Features:**
-- ✅ **Immutability:** Raw files never modified
-- ✅ **Lineage:** Partition structure preserves temporal context
-- ✅ **Replayability:** Any month can be reingested independently
-- ✅ **Audit trail:** Source file name preserved in metadata
+✅ Immutability: Raw files never modified
+✅ Lineage: Partition structure preserves temporal context
+✅ Replayability: Any month can be reingested independently
+✅ Audit trail: Source file name preserved in metadata
 
----
 
-#### Bronze Delta Table
-
-**Table:** `bronze_network_events`
-
-**Schema:**
-```python
-event_id              STRING    (NOT NULL)
+Bronze Delta Table
+Table: bronze_network_events
+Schema:
+pythonevent_id              STRING    (NOT NULL)
 site_id               STRING    (NOT NULL)
 vendor                STRING
 technology            STRING
@@ -173,211 +156,256 @@ severity              STRING
 resolved              STRING
 ingestion_timestamp   TIMESTAMP # Audit column
 source_file           STRING    # Audit column
-```
+Purpose:
 
-**Purpose:**
-- Consolidate partitioned CSV files into queryable Delta format
-- Enable downstream Silver transformations
-- Maintain audit metadata for troubleshooting
+Consolidate partitioned CSV files into queryable Delta format
+Enable downstream Silver transformations
+Maintain audit metadata for troubleshooting
 
-**Storage Format:** Delta Lake (ACID compliance, time travel)
+Storage Format: Delta Lake (ACID compliance, time travel)
 
----
+Bronze Validation
+Notebook: nb_Bronze_Validation
+Validation Checks:
 
-#### Bronze Validation
+Row Count Verification
 
-**Notebook:** `NB_Bronze_Validation`
+Total records ingested
+Count per partition (year/month)
 
-**Validation Checks:**
-1. **Row Count Verification**
-   - Total records ingested
-   - Count per partition (year/month)
 
-2. **Schema Inspection**
-   - Column presence validation
-   - Data type verification
-   - Null counts for critical columns
+Schema Inspection
 
-3. **Partition Validation**
-   - Expected partitions exist
-   - File structure matches convention
+Column presence validation
+Data type verification
+Null counts for critical columns
 
-4. **Data Quality Metrics** (observational only)
-   - Distinct value counts (vendors, technologies, provinces)
-   - Event type distribution
-   - Duration statistics (min, max, avg)
 
-**Important:** No data cleansing or transformations occur in Bronze validation. Issues are logged but not corrected.
+Partition Validation
 
----
+Expected partitions exist
+File structure matches convention
 
-### 🥈 Silver Layer (NOT STARTED)
 
-**Status:** 🔴 Planned for Phase 3
+Data Quality Metrics (observational only)
 
-**Planned Components:**
-- Silver Lakehouse: `lh_Silver_Telecom`
-- Notebooks:
-  - `nb_Silver_NetworkEvents` - Core transformation logic
-  - `nb_Silver_DataQualityMetrics` - DQ framework
-  - `nb_Silver_Sites` - Site dimension processing
-  - `nb_Silver_Vendors` - Vendor dimension processing
-  - `nb_Silver_Technologies` - Technology dimension processing
+Distinct value counts (vendors, technologies, provinces)
+Event type distribution
+Duration statistics (min, max, avg)
 
----
 
-### 🥇 Gold Layer (NOT STARTED)
 
-**Status:** 🔴 Planned for Phase 4
+Important: No data cleansing or transformations occur in Bronze validation. Issues are logged but not corrected.
 
-**Planned Star Schema:**
+🥈 Silver Layer (NOT STARTED)
+Status: 🔴 Planned for Phase 3
+Planned Components:
 
-**Fact Table:**
-- `fact_network_availability`
+Silver Lakehouse: lh_Silver_Telecom
+Notebooks:
 
-**Dimension Tables:**
-- `dim_date`
-- `dim_site` (SCD Type 2)
-- `dim_vendor`
-- `dim_technology`
-- `dim_province`
+nb_Silver_NetworkEvents - Core transformation logic
+nb_Silver_DataQualityMetrics - DQ framework
+nb_Silver_Sites - Site dimension processing
+nb_Silver_Vendors - Vendor dimension processing
+nb_Silver_Technologies - Technology dimension processing
 
----
 
-## 📏 Naming Conventions & Standards
 
-### Workspace Naming
-```
+
+🥇 Gold Layer (NOT STARTED)
+Status: 🔴 Planned for Phase 4
+Planned Star Schema:
+Fact Table:
+
+fact_network_availability
+
+Dimension Tables:
+
+dim_date
+dim_site (SCD Type 2)
+dim_vendor
+dim_technology
+dim_province
+
+
+📏 Naming Conventions & Standards
+Workspace Naming
 Pattern: WS_{BusinessDomain}_{Purpose}
 Example: WS_Telecom_Network_Availability
-```
+Rationale: Clear business context, avoids generic names like "test" or "dev"
 
-### Lakehouse Naming
-```
+Lakehouse Naming
 Pattern: lh_{Layer}_{Domain}
 Examples:
   - lh_Bronze_Telecom
   - lh_Silver_Telecom
   - lh_Gold_Telecom
-```
+Rationale: Lowercase prefix lh_ indicates lakehouse, layer prefix enables filtering/grouping
 
-### Pipeline Naming
-```
+Pipeline Naming
 Pattern: pl_{Layer}_{Entity}_{Action}_{Source}
 Examples:
   - pl_Bronze_NetworkEvents_Ingest_GitHub
   - pl_Telecom_EndToEnd (master orchestration)
   - pl_Silver_SLA_Calculate (future)
-```
+Rationale: Hierarchical naming shows layer, purpose, and source at a glance
 
-### Notebook Naming
-```
+Notebook Naming
 Pattern: nb_{Layer}_{Purpose}
 Examples:
   - nb_Bronze_Validation
   - nb_Silver_NetworkEvents
   - nb_Gold_DimSite_SCD2
   - nb_Gold_FactNetworkAvailability
-```
+Rationale: Prefix nb_ distinguishes from pipelines, layer indicates processing tier
 
-### Table Naming
+Dataflow Gen2 Naming
+Pattern: df_{Layer}_{Entity}_{Purpose}
+Examples:
+  - df_Silver_Reference_Lookups
+  - df_Silver_Vendors_Cleanse
+  - df_Gold_Dimensions_Merge
+Rationale: Prefix df_ indicates Dataflow Gen2, reserved for low-code transformations
+When to use:
 
-**Bronze Tables:**
-```
+Simple reference data ingestion
+Business user-friendly transformations
+Lookup table population
+Light ETL without complex logic
+
+When NOT to use:
+
+Complex business logic (use notebooks)
+Large-scale transformations (use Spark)
+SLA calculations or aggregations
+
+
+Warehouse Naming (If Implemented)
+Pattern: wh_{Purpose}_{Domain}
+Examples:
+  - wh_Analytics_Telecom
+  - wh_Reporting_Network
+Rationale: Prefix wh_ distinguishes from lakehouses
+Current Status: Not implemented (lakehouse-first architecture)
+When Warehouse might be added:
+
+SQL-heavy analytics requirements emerge
+Integration with external SQL tools needed
+Governance requires SQL-only access layer
+T-SQL stored procedure requirements
+
+Design Principle:
+
+If added, warehouse would sit alongside Gold lakehouse, not replace it
+Warehouse would be synchronized from Gold Delta tables
+Power BI would continue using Direct Lake on Gold lakehouse
+Warehouse serves SQL-native tools (SSMS, Excel, Tableau, etc.)
+
+
+Table Naming
+Bronze Tables:
 Pattern: bronze_{entity}
 Example: bronze_network_events
-```
-
-**Silver Tables:**
-```
+Silver Tables:
 Pattern: silver_{entity}
-Example: silver_network_events, silver_data_quality_metrics
-```
-
-**Gold Tables:**
-```
+Examples: 
+  - silver_network_events
+  - silver_data_quality_metrics
+Gold Tables:
 Pattern: {fact|dim}_{entity}
 Examples:
   - fact_network_availability
   - dim_date
   - dim_site
-```
+Rationale: Layer prefix in Bronze/Silver, semantic naming (fact/dim) in Gold
 
-### Parameter Naming
-```
+Parameter Naming
 Pattern: p_{parameter_name}
 Examples:
   - p_year
   - p_month
   - p_file_name
-```
+  - p_watermark_date (for incremental loading)
+Rationale: Clear prefix indicates pipeline parameter, prevents collision with variables
 
-**Rationale:** Clear prefixes indicate object type at a glance, reducing cognitive load and preventing naming collisions.
+Variable Naming
+Pattern: v_{variable_name}
+Examples:
+  - v_source_url
+  - v_row_count
+  - v_max_timestamp
+Rationale: Distinguishes pipeline variables from parameters
 
----
+Control/Metadata Tables
+Pattern: {layer}_control_{purpose}
+Examples:
+  - bronze_file_control (tracking ingested files)
+  - silver_watermark (incremental processing checkpoint)
+  - gold_refresh_log (fact table refresh history)
+Rationale: Layer prefix + "control" suffix indicates metadata purpose
 
-## 🎯 Design Decisions & Engineering Rationale
+Summary of Naming Standards:
+Object TypePrefixExampleUse CaseWorkspaceWS_WS_Telecom_Network_AvailabilityBusiness domain groupingLakehouselh_lh_Bronze_TelecomData storage layerWarehousewh_wh_Analytics_TelecomSQL analytics (future)Pipelinepl_pl_Bronze_NetworkEvents_Ingest_GitHubOrchestrationNotebooknb_nb_Silver_NetworkEventsPySpark transformationsDataflow Gen2df_df_Silver_Reference_LookupsLow-code ETLParameterp_p_year, p_monthDynamic pipeline inputsVariablev_v_source_urlPipeline variablesControl Table{layer}_control_bronze_file_controlMetadata tracking
+Consistency Principle: All naming follows lowercase with underscores, no camelCase or spaces
 
-### Why No Fabric Warehouse (Yet)?
+🎯 Design Decisions & Engineering Rationale
+Why No Fabric Warehouse (Yet)?
+Decision: Implement lakehouse-only architecture initially
+Rationale:
 
-**Decision:** Implement lakehouse-only architecture initially
+✅ Transformation engine: All logic is Spark/PySpark-based
+✅ Direct Lake support: Power BI can query Gold tables natively
+✅ Simplicity: Reduces infrastructure complexity in early phases
+✅ Cost efficiency: Avoids warehouse compute costs for MVP
+⚠️ Future consideration: Can add Warehouse later if SQL-heavy analytics emerge
 
-**Rationale:**
-- ✅ **Transformation engine:** All logic is Spark/PySpark-based
-- ✅ **Direct Lake support:** Power BI can query Gold tables natively
-- ✅ **Simplicity:** Reduces infrastructure complexity in early phases
-- ✅ **Cost efficiency:** Avoids warehouse compute costs for MVP
-- ⚠️ **Future consideration:** Can add Warehouse later if SQL-heavy analytics emerge
+When Warehouse might be added:
 
-**When Warehouse might be added:**
-- Complex SQL-based reporting requirements
-- Integration with external SQL tools
-- Governance requirements for SQL-only access
+Complex SQL-based reporting requirements
+Integration with external SQL tools (SSMS, Tableau)
+Governance requirements for SQL-only access
+T-SQL stored procedure needs
 
----
+Architecture if Warehouse added:
+Gold Lakehouse (Delta Tables)
+    ├──→ Direct Lake → Power BI (primary path)
+    └──→ Sync → Fabric Warehouse → SQL Tools (secondary path)
 
-### Why Parameterized Pipelines?
+Why Parameterized Pipelines?
+Decision: Build parameters into pipeline from day one
+Rationale:
 
-**Decision:** Build parameters into pipeline from day one
+✅ Incremental loading readiness: Supports month-by-month ingestion
+✅ Replayability: Any historical month can be reprocessed on demand
+✅ Backfill support: Easy to load multiple months via orchestration
+✅ Avoids hard-coding: No brittle path dependencies
+✅ Production pattern: Industry standard for data pipelines
 
-**Rationale:**
-- ✅ **Incremental loading readiness:** Supports month-by-month ingestion
-- ✅ **Replayability:** Any historical month can be reprocessed on demand
-- ✅ **Backfill support:** Easy to load multiple months via orchestration
-- ✅ **Avoids hard-coding:** No brittle path dependencies
-- ✅ **Production pattern:** Industry standard for data pipelines
+Alternative considered: Hard-coded monthly pipelines ❌
+Why rejected: Not scalable, high maintenance burden
 
-**Alternative considered:** Hard-coded monthly pipelines ❌  
-**Why rejected:** Not scalable, high maintenance burden
+Why Manual Batch Execution (Currently)?
+Decision: Run pipelines manually during Bronze phase implementation
+Rationale:
 
----
+✅ Validation focus: Ensures correctness before automation
+✅ Debugging ease: Clear failure points, easier troubleshooting
+✅ Incremental complexity: Build automation after core logic is proven
+✅ Learning curve: Allows understanding of each component
 
-### Why Manual Batch Execution (Currently)?
+Next step: Implement automated incremental orchestration (see Planned Enhancements)
 
-**Decision:** Run pipelines manually during Bronze phase implementation
+Why Partition by Year/Month?
+Decision: Partition Bronze files using year=YYYY/month=MM structure
+Rationale:
 
-**Rationale:**
-- ✅ **Validation focus:** Ensures correctness before automation
-- ✅ **Debugging ease:** Clear failure points, easier troubleshooting
-- ✅ **Incremental complexity:** Build automation after core logic is proven
-- ✅ **Learning curve:** Allows understanding of each component
+✅ Query performance: Spark partition pruning reduces scans by 90%+
+✅ Data management: Easy to delete/reprocess specific time periods
+✅ Standard pattern: Hive-style partitioning widely understood
+✅ Future-proof: Aligns with common time-series analytics needs
 
-**Next step:** Implement automated incremental orchestration (see Planned Enhancements)
-
----
-
-### Why Partition by Year/Month?
-
-**Decision:** Partition Bronze files using `year=YYYY/month=MM` structure
-
-**Rationale:**
-- ✅ **Query performance:** Spark partition pruning reduces scans by 90%+
-- ✅ **Data management:** Easy to delete/reprocess specific time periods
-- ✅ **Standard pattern:** Hive-style partitioning widely understood
-- ✅ **Future-proof:** Aligns with common time-series analytics needs
-
-**Performance Impact:**
-```
+Performance Impact:
 Without partitioning:
   Query: SELECT * FROM events WHERE year=2024 AND month=01
   Scan: ~40 MB (all 4 months)
@@ -386,49 +414,35 @@ With partitioning:
   Query: SELECT * FROM events WHERE year=2024 AND month=01
   Scan: ~10 MB (only January partition)
   Speedup: ~4x for this dataset, scales with data growth
-```
 
----
+Why Separate Lakehouses per Layer?
+Decision: Three dedicated lakehouses (Bronze, Silver, Gold)
+Rationale:
 
-### Why Separate Lakehouses per Layer?
+✅ Separation of concerns: Clear boundaries between raw/cleansed/curated
+✅ Access control: Can grant different permissions per layer
+✅ Performance isolation: Gold queries don't impact Bronze ingestion
+✅ Architectural clarity: Visually enforces medallion pattern
 
-**Decision:** Three dedicated lakehouses (Bronze, Silver, Gold)
+Alternative considered: Single lakehouse with folder separation ❌
+Why rejected: Weaker governance, risk of cross-layer pollution
 
-**Rationale:**
-- ✅ **Separation of concerns:** Clear boundaries between raw/cleansed/curated
-- ✅ **Access control:** Can grant different permissions per layer
-- ✅ **Performance isolation:** Gold queries don't impact Bronze ingestion
-- ✅ **Architectural clarity:** Visually enforces medallion pattern
-
-**Alternative considered:** Single lakehouse with folder separation ❌  
-**Why rejected:** Weaker governance, risk of cross-layer pollution
-
----
-
-## 🔄 Incremental Ingestion Strategy
-
-### Current State (Manual Incremental)
-
-**How it works today:**
-```
+🔄 Incremental Ingestion Strategy
+Current State (Manual Incremental)
+How it works today:
 1. Data engineer manually runs pipeline
 2. Passes parameters: p_year=2024, p_month=01
 3. Pipeline ingests January 2024 data
 4. Repeat for subsequent months
-```
+Characteristics:
 
-**Characteristics:**
-- ✅ **Incremental by design:** Each run processes one logical batch (one month)
-- ✅ **Idempotent:** Rerunning same parameters replaces partition (no duplicates)
-- ⚠️ **Manual trigger:** Requires human intervention
+✅ Incremental by design: Each run processes one logical batch (one month)
+✅ Idempotent: Rerunning same parameters replaces partition (no duplicates)
+⚠️ Manual trigger: Requires human intervention
 
----
 
-### Planned Enhancement: Automated Incremental Orchestration
-
-**Target state:**
-
-```
+Planned Enhancement: Automated Incremental Orchestration
+Target state:
 Master Pipeline: pl_Telecom_EndToEnd
 ├─ Step 1: Detect unprocessed months
 │  └─ Query control table: bronze_file_control
@@ -440,13 +454,11 @@ Master Pipeline: pl_Telecom_EndToEnd
 │
 └─ Step 3: Update control table
    └─ Record: year, month, timestamp, row_count, status
-```
+Implementation Components:
 
-**Implementation Components:**
+Control Table: bronze_file_control
 
-1. **Control Table:** `bronze_file_control`
-   ```sql
-   CREATE TABLE bronze_file_control (
+sql   CREATE TABLE bronze_file_control (
      year STRING,
      month STRING,
      file_name STRING,
@@ -454,158 +466,207 @@ Master Pipeline: pl_Telecom_EndToEnd
      row_count INT,
      status STRING  -- SUCCESS, FAILED, PROCESSING
    );
-   ```
 
-2. **Month Detection Logic:**
-   ```python
-   # Notebook: NB_Generate_Months_To_Process
+Month Detection Logic:
+
+python   # Notebook: nb_Generate_Months_To_Process
    # Compares: Available months vs. Processed months
    # Output: List of months needing ingestion
-   ```
 
-3. **ForEach Orchestration:**
-   ```
+ForEach Orchestration:
+
    ForEach Activity in Pipeline
    Items: @activity('Get_Unprocessed_Months').output.value
-   └─ Execute Pipeline: PL_Bronze_NetworkEvents_Ingest_GitHub
+   └─ Execute Pipeline: pl_Bronze_NetworkEvents_Ingest_GitHub
       Parameters: 
         - p_year: @item().year
         - p_month: @item().month
-   ```
+Benefits:
 
-**Benefits:**
-- ✅ **Fully automated:** No manual parameter entry
-- ✅ **Handles late-arriving data:** Backfills gaps automatically
-- ✅ **Idempotent at scale:** Safe to run daily/hourly
-- ✅ **Observable:** Control table provides audit trail
+✅ Fully automated: No manual parameter entry
+✅ Handles late-arriving data: Backfills gaps automatically
+✅ Idempotent at scale: Safe to run daily/hourly
+✅ Observable: Control table provides audit trail
 
-**Timeline:** Planned for Phase 2 completion (before moving to Silver)
+Timeline: Planned for Phase 2 completion (before moving to Silver)
 
----
+Watermark-Based Incremental Loading (Silver/Gold)
+Pattern: Track last processed timestamp to identify new records
+Implementation (Silver Layer):
 
-## 🚧 Intentionally Deferred (Not Done Yet)
+Watermark Table: silver_watermark
 
-The following capabilities are **deliberately not implemented** in the current Bronze phase:
+sql   CREATE TABLE silver_watermark (
+     table_name STRING,
+     watermark_column STRING,
+     watermark_value TIMESTAMP,
+     last_updated TIMESTAMP
+   );
 
-### Deferred to Phase 3 (Silver Layer):
-- ❌ SLA enforcement logic (99.9% uptime calculations)
-- ❌ Data quality metrics table
-- ❌ Timestamp standardization (ISO 8601 formatting)
-- ❌ Duration recalculation/validation
-- ❌ Late-arriving data reconciliation
-- ❌ Deduplication logic
+Incremental Query Pattern:
 
-### Deferred to Phase 4 (Gold Layer):
-- ❌ Star schema dimensional model
-- ❌ SCD Type 2 dimension handling
-- ❌ Aggregated fact tables
-- ❌ Date dimension generation
+sql   -- Get last watermark
+   last_watermark = spark.sql("""
+     SELECT watermark_value 
+     FROM silver_watermark 
+     WHERE table_name = 'silver_network_events'
+   """).collect()[0][0]
+   
+   -- Process only new records
+   df_incremental = spark.sql(f"""
+     SELECT * FROM bronze_network_events
+     WHERE ingestion_timestamp > '{last_watermark}'
+   """)
+   
+   -- Update watermark
+   new_watermark = df_incremental.agg(max("ingestion_timestamp")).collect()[0][0]
 
-### Deferred to Phase 5 (BI Layer):
-- ❌ Power BI semantic model
-- ❌ Network availability dashboards
-- ❌ SLA compliance reports
+Merge Pattern (Upsert):
 
-**Rationale for phased approach:**
-- Ensures each layer is implemented correctly and independently
-- Validates architecture before adding complexity
-- Allows clear testing and validation at each stage
-- Follows agile incremental delivery principles
+python   from delta.tables import DeltaTable
+   
+   delta_table = DeltaTable.forName(spark, "silver_network_events")
+   
+   delta_table.alias("target").merge(
+       df_incremental.alias("source"),
+       "target.event_id = source.event_id"
+   ).whenMatchedUpdateAll() \
+    .whenNotMatchedInsertAll() \
+    .execute()
+Benefits:
 
----
+✅ Efficient processing: Only new data processed
+✅ Handles late arrivals: Updates existing records
+✅ ACID compliance: Delta Lake ensures consistency
+✅ Production pattern: Standard incremental ETL approach
 
-## 🚀 Roadmap & Next Engineering Phase
+Use Cases:
 
-### ✅ Phase 1: Bronze Ingestion (COMPLETE)
-- [x] GitHub HTTP connection established
-- [x] Parameterized ingestion pipeline created
-- [x] Partitioned file storage implemented
-- [x] Bronze Delta table created
-- [x] Validation notebook developed
-- [x] End-to-end ingestion tested (4 months of data)
+Silver layer transformations (process new Bronze records)
+Gold layer aggregations (update facts incrementally)
+Change Data Capture (CDC) scenarios
 
----
 
-### 🔄 Phase 2: Incremental Automation (IN PROGRESS)
-**Target:** Fully automated incremental loading
+🚧 Intentionally Deferred (Not Done Yet)
+The following capabilities are deliberately not implemented in the current Bronze phase:
+Deferred to Phase 3 (Silver Layer):
 
-**Deliverables:**
-- [ ] Control table (`bronze_file_control`) creation
-- [ ] Month detection notebook (`NB_Generate_Months_To_Process`)
-- [ ] Control table update notebook (`NB_Update_Control_Table`)
-- [ ] Master pipeline refactoring with ForEach orchestration
-- [ ] End-to-end testing (new month scenarios, reprocessing)
+❌ SLA enforcement logic (99.9% uptime calculations)
+❌ Data quality metrics table
+❌ Timestamp standardization (ISO 8601 formatting)
+❌ Duration recalculation/validation
+❌ Late-arriving data reconciliation
+❌ Deduplication logic
+❌ Watermark-based incremental processing
 
-**Success Criteria:**
-- Pipeline automatically processes only unprocessed months
-- Control table accurately tracks ingestion history
-- Adding new month to GitHub triggers automatic processing
-- Running pipeline multiple times produces no duplicates
+Deferred to Phase 4 (Gold Layer):
 
-**Timeline:** 1-2 weeks
+❌ Star schema dimensional model
+❌ SCD Type 2 dimension handling
+❌ Aggregated fact tables
+❌ Date dimension generation
 
----
+Deferred to Phase 5 (BI Layer):
 
-### 🔜 Phase 3: Silver Transformations (PLANNED)
-**Target:** Cleansed, business-ready data layer
+❌ Power BI semantic model
+❌ Network availability dashboards
+❌ SLA compliance reports
 
-**Key Transformations:**
+Rationale for phased approach:
 
-1. **Timestamp Standardization**
-   ```python
-   # Convert: "2024-01-15 08:30:00" → ISO 8601 TIMESTAMP
+Ensures each layer is implemented correctly and independently
+Validates architecture before adding complexity
+Allows clear testing and validation at each stage
+Follows agile incremental delivery principles
+
+
+🚀 Roadmap & Next Engineering Phase
+✅ Phase 1: Bronze Ingestion (COMPLETE)
+
+ GitHub HTTP connection established
+ Parameterized ingestion pipeline created
+ Partitioned file storage implemented
+ Bronze Delta table created
+ Validation notebook developed
+ End-to-end ingestion tested (4 months of data)
+
+
+🔄 Phase 2: Incremental Automation (IN PROGRESS)
+Target: Fully automated incremental loading
+Deliverables:
+
+ Control table (bronze_file_control) creation
+ Month detection notebook (nb_Generate_Months_To_Process)
+ Control table update notebook (nb_Update_Control_Table)
+ Master pipeline refactoring with ForEach orchestration
+ End-to-end testing (new month scenarios, reprocessing)
+
+Success Criteria:
+
+Pipeline automatically processes only unprocessed months
+Control table accurately tracks ingestion history
+Adding new month to GitHub triggers automatic processing
+Running pipeline multiple times produces no duplicates
+
+Timeline: 1-2 weeks
+
+🔜 Phase 3: Silver Transformations (PLANNED)
+Target: Cleansed, business-ready data layer
+Key Transformations:
+
+Timestamp Standardization
+
+python   # Convert: "2024-01-15 08:30:00" → ISO 8601 TIMESTAMP
    # Validate: Reject future dates, invalid formats
    # Add: event_date (DATE), event_hour (INT) for partitioning
-   ```
 
-2. **SLA Compliance Logic**
-   ```python
-   # Business Rule: 99.9% uptime target
+SLA Compliance Logic
+
+python   # Business Rule: 99.9% uptime target
    # Calculate:
    #   - Total minutes in month
    #   - Outage minutes per site
    #   - SLA compliance % per site
    #   - SLA breach flag (TRUE/FALSE)
-   ```
 
-3. **Data Quality Framework**
-   ```sql
-   Table: silver_data_quality_metrics
+Data Quality Framework
+
+sql   Table: silver_data_quality_metrics
    Columns:
      - check_name: "null_event_id", "invalid_duration", etc.
      - check_timestamp: When check ran
      - failed_records: Count of records failing check
      - severity: CRITICAL, HIGH, MEDIUM, LOW
-   ```
 
-4. **Dimension Conformance**
-   ```python
-   # Sites: Standardize site_id format, geocode provinces
+Dimension Conformance
+
+python   # Sites: Standardize site_id format, geocode provinces
    # Vendors: Clean vendor names (Huawei vs. HUAWEI)
    # Technologies: Map to standard categories (4G, 5G, LTE)
-   ```
 
-**Deliverables:**
-- [ ] `nb_Silver_NetworkEvents` - Core transformation logic
-- [ ] `nb_Silver_DataQualityMetrics` - DQ checks
-- [ ] `nb_Silver_Sites` - Site dimension
-- [ ] `nb_Silver_Vendors` - Vendor dimension
-- [ ] `nb_Silver_Technologies` - Technology dimension
-- [ ] Silver Delta tables created
-- [ ] Data quality dashboard (Fabric)
+Watermark Implementation
 
-**Timeline:** 2-3 weeks
+python   # Implement watermark table for incremental processing
+   # Track last processed ingestion_timestamp
+   # Enable efficient delta processing
+Deliverables:
 
----
+ nb_Silver_NetworkEvents - Core transformation logic
+ nb_Silver_DataQualityMetrics - DQ checks
+ nb_Silver_Sites - Site dimension
+ nb_Silver_Vendors - Vendor dimension
+ nb_Silver_Technologies - Technology dimension
+ silver_watermark - Incremental processing control
+ Silver Delta tables created
+ Data quality dashboard (Fabric)
 
-### 🔜 Phase 4: Gold Star Schema (PLANNED)
-**Target:** Analytics-optimized dimensional model
+Timeline: 2-3 weeks
 
-**Star Schema Design:**
-
-**Fact Table:** `fact_network_availability`
-```sql
-Grain: One row per site per day
+🔜 Phase 4: Gold Star Schema (PLANNED)
+Target: Analytics-optimized dimensional model
+Star Schema Design:
+Fact Table: fact_network_availability
+sqlGrain: One row per site per day
 Columns:
   - date_key (FK → dim_date)
   - site_key (FK → dim_site)
@@ -615,104 +676,111 @@ Columns:
   - sla_compliance_pct (MEASURE)
   - sla_breach_flag (MEASURE)
   - event_count (MEASURE)
-```
+Dimension Tables:
 
-**Dimension Tables:**
-- `dim_date` - Calendar dimension (generated, not sourced)
-- `dim_site` - Site master with SCD Type 2
-- `dim_vendor` - Vendor reference (Type 1)
-- `dim_technology` - Technology types (Type 1)
-- `dim_province` - Geographic hierarchy (Type 1)
+dim_date - Calendar dimension (generated, not sourced)
+dim_site - Site master with SCD Type 2
+dim_vendor - Vendor reference (Type 1)
+dim_technology - Technology types (Type 1)
+dim_province - Geographic hierarchy (Type 1)
 
-**Deliverables:**
-- [ ] Date dimension generator (`nb_Gold_DimDate`)
-- [ ] SCD Type 2 implementation for sites
-- [ ] Fact table aggregation logic
-- [ ] Gold Delta tables created
-- [ ] Data validation (referential integrity checks)
+Deliverables:
 
-**Timeline:** 2-3 weeks
+ Date dimension generator (nb_Gold_DimDate)
+ SCD Type 2 implementation for sites
+ Fact table aggregation logic (watermark-based incremental)
+ Gold Delta tables created
+ Data validation (referential integrity checks)
 
----
+Timeline: 2-3 weeks
 
-### 🔜 Phase 5: BI Layer (PLANNED)
-**Target:** Production-ready Power BI dashboards
+🔜 Phase 5: BI Layer (PLANNED)
+Target: Production-ready Power BI dashboards
+Dashboards:
 
-**Dashboards:**
-1. **Network Availability Overview**
-   - Nationwide SLA compliance trend
-   - Top 10 sites by outages
-   - Outage severity distribution
+Network Availability Overview
 
-2. **Vendor Performance**
-   - Availability by vendor
-   - Technology comparison (4G vs 5G)
-   - Incident response times
-
-3. **Geographic Analysis**
-   - Province-level heatmap
-   - Regional SLA compliance
-   - Urban vs rural performance
-
-**Technical Implementation:**
-- Direct Lake mode (no import)
-- Row-level security (by province)
-- Incremental refresh configuration
-
-**Timeline:** 1-2 weeks
-
----
+Nationwide SLA compliance trend
+Top 10 sites by outages
+Outage severity distribution
 
 
-## 🛠️ Development Environment & Tools
+Vendor Performance
 
-### Microsoft Fabric Components Used:
-- **Lakehouse:** Data storage (OneLake Delta tables)
-- **Data Pipeline:** Orchestration and ingestion
-- **Notebook:** PySpark transformations
-- **Direct Lake:** Future BI connectivity
+Availability by vendor
+Technology comparison (4G vs 5G)
+Incident response times
 
-### Languages & Frameworks:
-- **PySpark 3.x:** Data transformations
-- **SQL (Spark SQL):** Querying and validation
-- **Python 3.10+:** Control logic
 
-### External Dependencies:
-- **GitHub:** Source data repository
-- **Delta Lake:** Storage format (ACID transactions)
+Geographic Analysis
 
-### Version Control:
-- Pipeline definitions: Exported as JSON (future)
-- Notebooks: Stored in Fabric workspace
-- Source data: GitHub repository
+Province-level heatmap
+Regional SLA compliance
+Urban vs rural performance
 
----
 
-## 🧪 Testing Strategy
 
-### Bronze Layer Testing:
+Technical Implementation:
 
-**Unit Tests (Notebook-level):**
-- Schema validation passes
-- Row counts match expected
-- Partitions created correctly
-- Audit columns populated
+Direct Lake mode (no import)
+Row-level security (by province)
+Incremental refresh configuration
 
-**Integration Tests (Pipeline-level):**
-- End-to-end ingestion from GitHub succeeds
-- Parameters correctly passed to copy activity
-- Delta table updated after pipeline run
+Timeline: 1-2 weeks
 
-**Regression Tests:**
-- Reingesting same month produces identical results
-- Historical data not impacted by new loads
+🛠️ Development Environment & Tools
+Microsoft Fabric Components Used:
 
-**Test Data:**
-- 4 months of real network availability data (Jan-Apr 2024)
-- ~XXX records per month
-- Multiple vendors, technologies, provinces
+Lakehouse: Data storage (OneLake Delta tables)
+Data Pipeline: Orchestration and ingestion
+Notebook: PySpark transformations
+Dataflow Gen2: Low-code transformations (planned for reference data)
+Direct Lake: Future BI connectivity
 
----
+Languages & Frameworks:
+
+PySpark 3.x: Data transformations
+SQL (Spark SQL): Querying and validation
+Python 3.10+: Control logic
+
+External Dependencies:
+
+GitHub: Source data repository
+Delta Lake: Storage format (ACID transactions)
+
+Version Control:
+
+Pipeline definitions: Exported as JSON (future)
+Notebooks: Stored in Fabric workspace
+Source data: GitHub repository
+
+
+🧪 Testing Strategy
+Bronze Layer Testing:
+Unit Tests (Notebook-level):
+
+Schema validation passes
+Row counts match expected
+Partitions created correctly
+Audit columns populated
+
+Integration Tests (Pipeline-level):
+
+End-to-end ingestion from GitHub succeeds
+Parameters correctly passed to copy activity
+Delta table updated after pipeline run
+Control table updated correctly (Phase 2)
+
+Regression Tests:
+
+Reingesting same month produces identical results
+Historical data not impacted by new loads
+
+Test Data:
+
+4 months of real network availability data (Jan-Apr 2024)
+Multiple vendors, technologies, provinces
+Coverage of different event types and severities
 
 ## 📚 References & Further Reading
 
