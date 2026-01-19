@@ -107,7 +107,7 @@ Generated **South Africa–themed telecom outage data**, provided as monthly CSV
 
 **Dimensions**
 - `dim_date`
-- `dim_site` (SCD Type 2 – tracks technology upgrades)
+- `dim_site` (SCD Type 2 – preserves historical site attributes)
 - `dim_vendor`
 - `dim_technology`
 - `dim_province`
@@ -175,7 +175,6 @@ erDiagram
     DIM_TECHNOLOGY ||--o{ FACT_NETWORK_AVAILABILITY : technology_key
     DIM_PROVINCE ||--o{ FACT_NETWORK_AVAILABILITY : province_key
 
----
 
 ## 📊 Analytics & Reporting
 
