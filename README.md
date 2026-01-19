@@ -175,8 +175,6 @@ erDiagram
     DIM_TECHNOLOGY ||--o{ FACT_NETWORK_AVAILABILITY : technology_key
     DIM_PROVINCE ||--o{ FACT_NETWORK_AVAILABILITY : province_key
 
-
-
 ---
 
 ## 📊 Analytics & Reporting
