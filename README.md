@@ -111,6 +111,7 @@ Generated **South Africa–themed telecom outage data**, provided as monthly CSV
 - `dim_vendor`
 - `dim_technology`
 - `dim_province`
+- `dim_cause`
 
 ### Purpose
 - Stable, analytics-ready data
