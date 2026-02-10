@@ -117,7 +117,7 @@ Generated **South Africa–themed telecom outage data**, provided as monthly CSV
 - Optimized for Power BI consumption
 - No business logic changes at this layer
 
-![Gold Star Schema](Images/gold_star_schema.png)
+![Gold Star Schema](Images/star_schema.png)
 ---
 
 ## 📊 Analytics & Reporting
