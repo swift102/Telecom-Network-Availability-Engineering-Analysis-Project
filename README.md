@@ -141,6 +141,7 @@ Generated **South Africa–themed telecom outage data**, provided as monthly CSV
 ### Pipelines
 - `pl_Bronze_NetworkEvents_Ingest`
 - `pl_Telecom_EndToEnd` (parent orchestration)
+- `pl_Gold_Processing`
 
 ### Execution Principles
 - Bronze → Silver → Gold dependencies
@@ -158,8 +159,8 @@ Generated **South Africa–themed telecom outage data**, provided as monthly CSV
 | Phase 1 – Environment Setup | ✅ Complete |
 | Phase 2 – Bronze Ingestion |  ✅ Complete  |
 | Phase 3 – Silver Transformations | ✅ Complete |
-| Phase 4 – Gold Modeling | 🔄 In progress |
-| Phase 5 – BI Dashboard | ⏳ Planned |
+| Phase 4 – Gold Modeling |✅ Complete |
+| Phase 5 – BI Dashboard | 🔄 In progress |
 | Phase 6 – Enhancements  | ⏳ Future |
 
 ---
