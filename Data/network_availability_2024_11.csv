@@ -1,0 +1,5 @@
+Site_ID,Province,Province_Code,Vendor,Technology,Outage_Start,Outage_End,Duration_Minutes,Availability_Percent,Cause,year,month
+SITE_001,Gauteng,GP,Ericsson,5G,2024-11-02 06:45,2024-11-02 07:15,30,99.38,Maintenance,2024,11
+SITE_002,Western Cape,WC,Nokia,4G,2024-11-06 14:00,2024-11-06 15:20,80,98.61,Power Outage,2024,11
+SITE_003,Mpumalanga,MP,Huawei,3G,2024-11-12 15:10,2024-11-12 17:40,150,97.5,Weather,2024,11
+SITE_004,Eastern Cape,EC,Ericsson,3G,2024-11-18 09:30,2024-11-18 12:30,180,97.0,Technology Downgrade,2024,11
