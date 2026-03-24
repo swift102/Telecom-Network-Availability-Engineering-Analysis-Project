@@ -1,0 +1,207 @@
+{
+    "name": "pl_End-to-End Bronze-Silver-Gold Automation",
+    "objectId": "de4337b1-e5af-4a89-8db8-6a14e0785df9",
+    "properties": {
+        "activities": [
+            {
+                "name": "Invoke_Bronze_Pipeline",
+                "description": "The pipeline invokes the bronze network events pipeline.",
+                "type": "InvokePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Set v_file_name",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "waitOnCompletion": true,
+                    "operationType": "InvokeFabricPipeline",
+                    "pipelineId": "76f87ec0-d513-40cd-b9c9-beb646ba0107",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17",
+                    "parameters": {
+                        "p_year": {
+                            "value": "@variables('v_year')",
+                            "type": "Expression"
+                        },
+                        "p_month": {
+                            "value": "@variables('v_month')",
+                            "type": "Expression"
+                        },
+                        "p_file_name": {
+                            "value": "@variables('v_file_name')",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "externalReferences": {
+                    "connection": "c39082e1-8818-47d7-ad12-b610188860f2"
+                }
+            },
+            {
+                "name": "Dataflow_Bronze_To_Silver",
+                "description": "This runs the minor transformations done in the dataflow.",
+                "type": "RefreshDataflow",
+                "dependsOn": [
+                    {
+                        "activity": "Invoke_Bronze_Pipeline",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "dataflowId": "be36908e-c8df-4b66-b820-9f6bb5db9440",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17",
+                    "notifyOption": "NoNotification",
+                    "dataflowType": "DataflowFabric"
+                }
+            },
+            {
+                "name": "Silver_Notebook_Transformations",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Dataflow_Bronze_To_Silver",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "69958dcb-0f98-4c5e-b311-c06c637da248",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            },
+            {
+                "name": "Invoke_Gold_Pipeline",
+                "description": "The pipeline invokes the gold processing pipeline.",
+                "type": "InvokePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Silver_Notebook_Transformations",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "waitOnCompletion": true,
+                    "operationType": "InvokeFabricPipeline",
+                    "pipelineId": "39d1f0ca-ebad-409b-80c9-ef557391da6b",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                },
+                "externalReferences": {
+                    "connection": "c39082e1-8818-47d7-ad12-b610188860f2"
+                }
+            },
+            {
+                "name": "Set v_year",
+                "type": "SetVariable",
+                "dependsOn": [],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "variableName": "v_year",
+                    "value": {
+                        "value": "@formatDateTime(utcNow(),'yyyy')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "Set v_month",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "Set v_year",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "variableName": "v_month",
+                    "value": {
+                        "value": "@formatDateTime(utcNow(),'MM')",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "Set v_file_name",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "Set v_month",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "variableName": "v_file_name",
+                    "value": {
+                        "value": "@concat('network_availability_', formatDateTime(utcNow(),'yyyy'), '_', formatDateTime(utcNow(),'MM'), '.csv')",
+                        "type": "Expression"
+                    }
+                }
+            }
+        ],
+        "variables": {
+            "v_year": {
+                "type": "String",
+                "defaultValue": "@formatDateTime(utcNow(),'yyyy')"
+            },
+            "v_month": {
+                "type": "String",
+                "defaultValue": "@formatDateTime(utcNow(), 'MM')"
+            },
+            "v_file_name": {
+                "type": "String",
+                "defaultValue": "@concat('network_availability_', formatDateTime(utcNow(),'yyyy'), '_', formatDateTime(utcNow(),'MM'), '.csv')"
+            }
+        },
+        "lastModifiedByObjectId": "15d67648-f68f-4c40-84df-f9f5f5d930e3",
+        "lastPublishTime": "2026-02-11T13:27:16Z"
+    }
+}

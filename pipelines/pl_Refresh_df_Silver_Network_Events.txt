@@ -1,0 +1,53 @@
+{
+    "name": "pl_Refresh_df_Silver_Network_Events",
+    "objectId": "548b2a89-bf8d-4c5d-bfd3-0bcd0bc9d1ae",
+    "properties": {
+        "activities": [
+            {
+                "name": "Network_Events_Clean_Dataflow",
+                "description": "Dataflow to standardize the network events from the bronze lakehouse",
+                "type": "RefreshDataflow",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "dataflowId": "be36908e-c8df-4b66-b820-9f6bb5db9440",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17",
+                    "notifyOption": "NoNotification",
+                    "dataflowType": "DataflowFabric"
+                }
+            },
+            {
+                "name": "Notebook_Events_Silver_Transformation",
+                "description": "Notebook to transform the cleaned bronze data from the dataflow",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Network_Events_Clean_Dataflow",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "69958dcb-0f98-4c5e-b311-c06c637da248",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            }
+        ],
+        "lastModifiedByObjectId": "12842e7d-33df-4708-9c5b-c0267c888d3e",
+        "lastPublishTime": "2026-01-14T18:41:14Z"
+    }
+}

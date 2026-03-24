@@ -1,0 +1,160 @@
+{
+    "name": "pl_Gold_Processing",
+    "objectId": "39d1f0ca-ebad-409b-80c9-ef557391da6b",
+    "properties": {
+        "activities": [
+            {
+                "name": "Notebook_Date",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "3a9ea900-5481-4ab2-ab8c-12f448d8d69a",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            },
+            {
+                "name": "Notebook_Cause",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "49bd9895-c86d-4ab5-a9b8-bfb0f7073222",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            },
+            {
+                "name": "Notebook_Vendor",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "b636c57f-d9a4-4ff6-8e9e-e9b51da3492e",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            },
+            {
+                "name": "Notebook_Technology",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "274500ad-b135-4050-8af4-0a3f2a97f238",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            },
+            {
+                "name": "Notebook_DimProvince",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "cfbc40cc-ba19-4a1a-b179-6823af8e52f4",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            },
+            {
+                "name": "Notebook_Site",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Notebook_DimProvince",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "5afeb8dd-6b38-495a-8280-683cbef3a2a7",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            },
+            {
+                "name": "FactAvailability",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Notebook_Date",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "Notebook_Cause",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "Notebook_Vendor",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "Notebook_Technology",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "Notebook_Site",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "24894b14-4b4c-48a9-96b9-ac07bd22636d",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17"
+                }
+            }
+        ],
+        "lastModifiedByObjectId": "15d67648-f68f-4c40-84df-f9f5f5d930e3",
+        "lastPublishTime": "2026-02-10T08:58:07Z"
+    }
+}

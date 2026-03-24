@@ -1,0 +1,170 @@
+{
+    "name": "pl_Bronze_NetworkEvents_Ingest",
+    "objectId": "76f87ec0-d513-40cd-b9c9-beb646ba0107",
+    "properties": {
+        "description": "Ingest raw CSV files into Bronze layer with partitioning",
+        "activities": [
+            {
+                "name": "Copy_GitHub_To_Bronze",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "HttpReadSettings",
+                            "requestMethod": "GET"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        },
+                        "datasetSettings": {
+                            "annotations": [],
+                            "type": "DelimitedText",
+                            "typeProperties": {
+                                "location": {
+                                    "type": "HttpServerLocation",
+                                    "relativeUrl": {
+                                        "value": "@{concat(\n  '/swift102/Telecom-Network-Availability-Engineering-Analysis-Project/main/Data/',\n  pipeline().parameters.p_file_name\n)}\n",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "columnDelimiter": ",",
+                                "escapeChar": "\\",
+                                "firstRowAsHeader": true,
+                                "quoteChar": "\""
+                            },
+                            "schema": [],
+                            "externalReferences": {
+                                "connection": "e50a5e3a-375b-42bb-b8c9-4a0a1d67021c"
+                            }
+                        }
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "LakehouseWriteSettings",
+                            "copyBehavior": "FlattenHierarchy"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "fileExtension": ".csv"
+                        },
+                        "datasetSettings": {
+                            "annotations": [],
+                            "connectionSettings": {
+                                "name": "lh_Bronze_Telecom",
+                                "properties": {
+                                    "annotations": [],
+                                    "type": "Lakehouse",
+                                    "typeProperties": {
+                                        "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17",
+                                        "artifactId": "ca1c2d1d-4f3f-41b8-bcdf-22018cb015c1",
+                                        "rootFolder": "Files"
+                                    },
+                                    "externalReferences": {
+                                        "connection": "16a9bbae-5119-4fa3-b651-a039760e9308"
+                                    }
+                                }
+                            },
+                            "type": "DelimitedText",
+                            "typeProperties": {
+                                "location": {
+                                    "type": "LakehouseLocation",
+                                    "fileName": {
+                                        "value": "@pipeline().parameters.p_file_name",
+                                        "type": "Expression"
+                                    },
+                                    "folderPath": {
+                                        "value": "network_events/year=@{pipeline().parameters.p_year}/month=@{pipeline().parameters.p_month}",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "columnDelimiter": ",",
+                                "escapeChar": "\\",
+                                "firstRowAsHeader": true,
+                                "quoteChar": "\""
+                            },
+                            "schema": []
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                }
+            },
+            {
+                "name": "nb_validate_bronze",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Copy_GitHub_To_Bronze",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "2779f5ed-1722-43b0-9c39-063d046d241c",
+                    "workspaceId": "ece84d08-10a4-466e-be9f-0754b1e72e17",
+                    "parameters": {
+                        "p_year": {
+                            "value": {
+                                "value": "@pipeline().parameters.p_year",
+                                "type": "Expression"
+                            },
+                            "type": "string"
+                        },
+                        "p_month": {
+                            "value": {
+                                "value": "@pipeline().parameters.p_month",
+                                "type": "Expression"
+                            },
+                            "type": "string"
+                        },
+                        "p_file_name": {
+                            "value": {
+                                "value": "@pipeline().parameters.p_file_name",
+                                "type": "Expression"
+                            },
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        ],
+        "parameters": {
+            "p_year": {
+                "type": "string"
+            },
+            "p_month": {
+                "type": "string"
+            },
+            "p_file_name": {
+                "type": "string"
+            }
+        },
+        "lastModifiedByObjectId": "15d67648-f68f-4c40-84df-f9f5f5d930e3",
+        "lastPublishTime": "2026-02-12T22:17:44Z"
+    }
+}
