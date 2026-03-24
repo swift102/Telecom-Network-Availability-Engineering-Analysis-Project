@@ -1,0 +1,50 @@
+let
+  Source = Lakehouse.Contents(null),
+  Navigation = Source{[workspaceId = "ece84d08-10a4-466e-be9f-0754b1e72e17"]}[Data],
+  #"Navigation 1" = Navigation{[lakehouseId = "ca1c2d1d-4f3f-41b8-bcdf-22018cb015c1"]}[Data],
+  #"Navigation 2" = #"Navigation 1"{[Id = "bronze_network_events", ItemKind = "Table"]}[Data],
+
+  #"Trimmed text" =
+      Table.TransformColumns(
+          #"Navigation 2",
+          {
+              {"Site_ID", each Text.Upper(Text.Trim(_)), type nullable text},
+              {"Province_Code", each Text.Upper(Text.Trim(_)), type nullable text},
+              {"Province", each Text.Upper(Text.Trim(_)), type nullable text},
+              {"Vendor", each Text.Upper(Text.Trim(_)), type nullable text},
+              {"Cause", each Text.Upper(Text.Trim(_)), type nullable text}
+          }
+      ),
+
+  #"Filtered rows" =
+      Table.SelectRows(
+          #"Trimmed text",
+          each ([Outage_End] <> null) and ([Duration_Minutes] <> "")
+      ),
+
+  #"Removed duplicates" =
+      Table.Distinct(
+          #"Filtered rows",
+          {
+              "Site_ID", "Province_Code", "Province", "Vendor",
+              "Technology", "Outage_Start", "Outage_End",
+              "Duration_Minutes", "Availability_Percent",
+              "Cause", "month", "year"
+          }
+      ),
+
+  #"Added custom" =
+      Table.AddColumn(
+          #"Removed duplicates",
+          "Calculated_Duration",
+          each Duration.TotalMinutes([Outage_End] - [Outage_Start])
+      ),
+
+  #"Changed column type" =
+      Table.TransformColumnTypes(
+          #"Added custom",
+          {{"Calculated_Duration", Int64.Type}}
+      )
+
+in
+  #"Changed column type"
